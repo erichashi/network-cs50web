@@ -1,0 +1,25 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+    <div id="all-post-view" class="col-sm-7 text-left"> 
+        <h1>All posts</h1>
+    
+    </div>
+
+
+    <div id="edit-view" class="col-sm-7 text-left">
+        <h1>Edit</h1>
+
+    </div>
+
+    {% if user.is_authenticated %}
+    <div id="new-post-view" class="col-sm-3 sidenav">
+        <h3>New Post</h3>
+        <form id="compose-form">
+            <textarea class="form-control" id="compose-content" ></textarea>
+            <input type="submit" id="new-post-button" value="Post">
+        </form>
+    </div>
+    {% endif %}
+
+{% endblock %}
