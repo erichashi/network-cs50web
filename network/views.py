@@ -8,12 +8,10 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
+from django.core.paginator import Paginator
 
 from .models import User, Post
 
-
-def index(request):
-    return render(request, "network/index.html")
 
 
 def login_view(request):
@@ -68,8 +66,7 @@ def register(request):
         return render(request, "network/register.html")
 
 
-#Functions
-
+#API routes
 @csrf_exempt
 @login_required
 def compose(request):
@@ -93,14 +90,13 @@ def compose(request):
 
     return JsonResponse({"message": "Post sent successfully."}, status=201)
 
-
 @csrf_exempt
 @login_required
 def post(request, post_id):
 
     # Query for requested email
     try:
-        post = Post.objects.get(user=request.user, pk=post_id)
+        post = Post.objects.get(pk=post_id)
     except Post.DoesNotExist:
         return JsonResponse({"error": "Post not found."}, status=404)
 
@@ -113,21 +109,92 @@ def post(request, post_id):
         data = json.loads(request.body)
         if data.get("likes") is not None:
             post.likes = data["likes"]
+            
+        if data.get("content") is not None:
+            post.content = data["content"]
          
-        email.save()
+        post.save()
         return HttpResponse(status=204)
 
-    # Email must be via GET or PUT
+    # post must be via GET or PUT
     else:
         return JsonResponse({
             "error": "GET or PUT request required."
         }, status=400)
 
+#Functions
 
-def all(request): 
+#helpers
 
-    posts = Post.objects.all()
-    
-    # Return posts in reverse chronologial order
+def isFollowing(online, user):
+    if online.userprofile not in user.userprofile.follows.all():
+        return False
+    else:
+        return True
+
+def isFollowingString(online, user):
+    if isFollowing(online, user):
+        return "Unfollow"
+    return "Follow"
+
+
+def initializePaginator(page_number, posts):
     posts = posts.order_by("-timestamp").all()
-    return JsonResponse([post.serialize() for post in posts], safe=False)
+    paginator = Paginator(posts, 10) 
+    return paginator.get_page(page_number) 
+
+
+def getPostsFromFollowing(user):
+    fs = user.userprofile.followed_by.all()
+    follows = [f.user for f in fs]
+    return Post.objects.filter(poster__in=follows)
+
+
+#request functions
+
+def index(request):
+    return render(request, "network/index.html", {
+        "page_posts": initializePaginator(request.GET.get('page'), Post.objects.all()),
+        "title": "All posts"
+    })
+
+
+def following(request):
+    posts = getPostsFromFollowing(request.user)
+    return render(request, "network/index.html", {
+        "page_posts": initializePaginator(request.GET.get('page'), posts),
+        "title": "Following"
+    })
+
+
+
+def profile(request, username):
+    try:
+        user = User.objects.get(username=username)   
+    except User.DoesNotExist:
+        return render(request, "network/nopage.html")
+
+    return render(request, "network/index.html", {
+        "username": user,
+        "followers_count": len(user.userprofile.follows.all()),
+        "following_count": len(user.userprofile.followed_by.all()),
+        "follow_unfollow": isFollowingString(request.user, user),
+        "page_posts": initializePaginator(request.GET.get('page'), Post.objects.filter(poster=user)),  
+    })
+
+def follow(request, user_id):
+    user = User.objects.get(id=user_id)
+    online = request.user
+    
+    if not isFollowing(online, user):
+        user.userprofile.follows.add(online.userprofile)
+    else:
+        user.userprofile.follows.remove(online.userprofile)
+
+    return HttpResponseRedirect(reverse("profile", args=[user]))
+    
+        
+def new(request):
+    if request.method == 'POST':
+        return HttpResponseRedirect(reverse(index))
+    return render(request, "network/compose.html")

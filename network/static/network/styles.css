@@ -1,0 +1,118 @@
+body{
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto;
+  }
+  
+body .navbar {
+  background-color: rgb(223, 235, 240);
+}
+
+body .navbar a {
+  color: rgba(29,161,242,1.00);
+  font-weight: 800; 
+}
+body .navbar a:hover {
+  color: white
+}
+
+.body{
+  padding: 20px 100px;
+}
+body h1{
+  margin-bottom: 20px;
+}
+
+
+  
+#profile-view {
+  text-align: center;
+  margin-bottom: 20px;
+}
+#profile-view h1{
+  margin-bottom: 15px;
+}
+
+#profile-view span  {
+  margin-top: 10px;
+  padding: 5px;
+  font-weight: 800;
+  margin-bottom: 20px;
+
+
+}
+
+#new-post-view input{
+  margin-top: 10px;
+  font-weight: 800;
+  float: right;
+  color: rgba(29,161,242,1.00);
+  background-color: rgb(223, 235, 240);
+  border: 1px solid lightblue;
+}
+#new-post-view input:hover{
+  color: white;
+  background-color: rgba(29,161,242,1.00);
+  
+}
+
+
+
+.post {
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid lightgrey;
+  transition: 0.2s;
+}
+
+.post #user-link{
+  display: flex;
+  margin-bottom: 10px;
+  font-size: 20px;
+  font-weight: 700;
+
+}
+.post #user-link p{
+  margin-bottom: 0;
+  margin-top: 5px;
+  margin-left: 30px;
+  color: lightgray;
+  font-weight: 700;
+  font-size: 15px;
+  font-weight: 400;
+}
+
+.post .edit-button {
+  float: right;
+  border: 0;
+  padding: 3px 15px
+}
+
+.post #edit-container {
+  place-items: flex-start;
+}
+
+.post #edit-container #save-button {
+  margin-right: 10px;
+  font-weight: 800;
+  float: right;
+  color: rgba(29,161,242,1.00);
+  background-color: rgb(223, 235, 240);
+  border: 1px solid lightblue;
+
+}
+.post #edit-container #save-button:hover {
+  color: white;
+  background-color: rgba(29,161,242,1.00);
+}
+
+
+
+
+
+
+  
+
+.fa {
+  cursor: pointer;
+  color: red;
+  font-size: 25px
+}

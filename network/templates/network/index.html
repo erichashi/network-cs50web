@@ -1,0 +1,69 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+
+    <!-- Profile Page and All Posts render index.html -->
+
+    {% if username %}
+      <div id="profile-view">
+        <h1>{{ username }}</h1>
+      <div>
+          
+          <span>followers: {{ followers_count }}</span> 
+          <span>following: {{ following_count }}</span>
+        </div>
+           
+        {% if username != user %}
+            <a href="{% url 'follow' username.id %}">{{ follow_unfollow }}</a>
+        {% endif %}
+      </div>
+
+    {% else %}
+      <h1>{{ title }}</h1>
+    {% endif %}
+
+    
+    {% for post in page_posts %}
+      <div class='post'>
+        <div id="user-link">
+          <a href="{% url 'profile' post.poster %}">{{ post.poster }}</a> 
+          <p>{{ post.timestamp }}</p>
+
+        </div>
+        <div id="p-content">
+          <p id="p-content-value">{{ post.content }}</p>
+        </div>
+        <p id="post-id" style="display: none;">{{ post.id }}</p>
+        {% if post.poster == user %}
+          <div id="edit-container" style="display: none;">
+              <textarea id="edit-textarea"></textarea>
+              <button id="save-button">Save</button>
+          </div>
+          <button class="edit-button">Edit</button>
+        {% endif %}
+        <i class="fa fa-heart-o"></i> <span>{{ post.likes }}</span> 
+      </div>
+    {% empty %}
+      No posts...
+    {% endfor %}
+    
+    <div class="pagination">
+      <span class="step-links">
+        {% if page_posts.has_previous %}
+            <a href="?page={{ page_posts.previous_page_number }}">Previous</a>
+        {% endif %}
+
+        {% if page_posts.has_next %}
+            <a href="?page={{ page_posts.next_page_number }}">Next &raquo;</a >
+            <!-- <a href="?page={{ page_posts.paginator.num_pages }}">last </a> -->
+        {% endif %}
+      </span>
+    </div>
+
+{% endblock %}
+
+
+{% block script %} 
+<script src="{% static 'network/posts_config.js' %}"></script>
+{% endblock %}

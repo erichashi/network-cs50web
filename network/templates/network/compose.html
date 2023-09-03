@@ -1,0 +1,34 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+    
+
+    <div id="new-post-view">
+        <h3>New Post</h3>
+        <form id="compose-form">
+            <textarea class="form-control" id="compose-content" placeholder="What's happening?"></textarea>
+            <input type="submit" id="new-post-button" value="Post">
+        </form>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function(){
+            
+            document.querySelector('#compose-form').onsubmit = () => {
+
+                fetch('/api/posts/new', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        content: document.querySelector('#compose-content').value
+                 })
+                })
+                .then(response => response.json())
+            }
+        })
+        
+    </script>
+{% endblock %}
